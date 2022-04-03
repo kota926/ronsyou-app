@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setListArray } from "../redux/modules/listArray";
+import { RootState } from "../redux/store";
 import { useAuth } from "../AuthContext";
 import axios from "../lib/axios";
 import NumbersIcon from '@mui/icons-material/Numbers';
@@ -25,9 +28,11 @@ import {
 } from "@mui/material";
 
 const ShowList = () => {
+    const dispatch = useDispatch()
+    const listArray = useSelector((state: RootState) => state.listArray)
     const navigate = useNavigate()
     const auth = useAuth()
-    const [lists, setLists] = useState([])
+    // const [lists, setLists] = useState([])
     const [selectedList, setSelectedList] = useState(null)
     const [isOpenDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [isOpenCreateDialog, setOpenCreateDialog] = useState(false)
@@ -53,7 +58,8 @@ const ShowList = () => {
             const newData = res.data.map((list) => {
                 return jpDateList(list)
             })
-            setLists(newData)
+            // setLists(newData)
+            dispatch(setListArray(newData))
         }).catch((err) => {
             console.log(err)
         })
@@ -71,23 +77,35 @@ const ShowList = () => {
     const deleteList = () => {
         setIsLoading(true)
         axios.delete('/api/v1/lists/' + selectedList.id).then((res) => {
-            axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
-                // 作成日を見やすく変換
-                const newData = res.data.map((data) => {
-                    const ts = Date.parse(data.created_at)
-                    const dt = new Date(ts)
-                    const japanDate = dt.getFullYear() + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getDate().toString().padStart(2, '0')
-                    return {
-                        ...data,
-                        created_at: japanDate
-                    }
-                })
-                setLists(newData)
-                setIsLoading(false)
-                setOpenDeleteDialog(false)
-            }).catch((err) => {
-                console.log(err)
+            // axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
+            //     // 作成日を見やすく変換
+            //     const newData = res.data.map((data) => {
+            //         const ts = Date.parse(data.created_at)
+            //         const dt = new Date(ts)
+            //         const japanDate = dt.getFullYear() + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getDate().toString().padStart(2, '0')
+            //         return {
+            //             ...data,
+            //             created_at: japanDate
+            //         }
+            //     })
+            //     // setLists(newData)
+            //     dispatch(setListArray(newData))
+            //     setIsLoading(false)
+            //     setOpenDeleteDialog(false)
+            // }).catch((err) => {
+            //     console.log(err)
+            // })
+            console.log(listArray)
+            console.log(selectedList)
+            const newLists = listArray.filter((list) => {
+                console.log(list.title, list.id !== selectedList.id)
+                return list.id !== selectedList.id
             })
+            console.log(newLists)
+            // setLists(newLists)
+            dispatch(setListArray(newLists))
+            setIsLoading(false)
+            setOpenDeleteDialog(false)
         }).catch((err) => {
             console.log(err)
             if(err.message === "Unauthenticated.") {
@@ -108,6 +126,28 @@ const ShowList = () => {
             }
             setIsLoading(true)
             axios.post('/api/v1/lists/create', dataToSend).then((res)=>{
+                // axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
+                //     // 作成日を見やすく変換
+                //     const newData = res.data.map((data) => {
+                //         const ts = Date.parse(data.created_at)
+                //         const dt = new Date(ts)
+                //         const japanDate = dt.getFullYear() + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getDate().toString().padStart(2, '0')
+                //         return {
+                //             ...data,
+                //             created_at: japanDate
+                //         }
+                //     })
+                //     // setLists(newData)
+                //     dispatch(setListArray(newData))
+                //     setIsLoading(false)
+                //     setOpenCreateDialog(false)
+                // }).catch((err) => {
+                //     console.log(err)
+                // })
+                const jpData = jpDateList(res.data)
+                const newLists = [...listArray, jpData]
+                // setLists(newLists)
+                dispatch(setListArray(newLists))
                 setIsLoading(false)
                 setOpenCreateDialog(false)
             }).catch((err) => {
@@ -140,11 +180,12 @@ const ShowList = () => {
             setIsLoading(true)
             axios.put('/api/v1/lists/update/' + selectedList.id, dataToSend).then((res)=>{
                 const newData = jpDateList(res.data)
-                const newLists = lists.map((list) => {
+                const newLists = listArray.map((list) => {
                     return list.id === selectedList.id ? newData : list
 
                 })
-                setLists(newLists)
+                // setLists(newLists)
+                dispatch(setListArray(newLists))
                 setIsLoading(false)
                 setOpenEditDialog(false)
             }).catch((err) => {
@@ -167,7 +208,7 @@ const ShowList = () => {
 
     return (
         <Container>
-            {lists.map((list) => {
+            {listArray.map((list) => {
                 return (
                     <Card sx={{maxWidth: 600, mx: 'auto', mt: 2}} key={list.id}>
                         <CardContent>
@@ -270,7 +311,7 @@ const ShowList = () => {
             <Stack sx={{mt:2}}>
                 <Button
                 variant="contained"
-                sx={{maxWidth: 200, mx: 'auto'}}
+                sx={{maxWidth: 200, mx: 'auto', my:2}}
                 onClick={handleCreateBtn}>リストを作成</Button>
             </Stack>
             <Dialog

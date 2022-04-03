@@ -15,6 +15,7 @@ import {
     useScrollTrigger,
     Slide,
     Dialog,
+    Card,
 } from "@mui/material";
 import GavelIcon from '@mui/icons-material/Gavel';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -96,16 +97,26 @@ const SearchBar = () => {
                                 <GavelIcon />
                             </IconButton>
                         </Link>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            color="inherit"
-                            // aria-label="search"
-                            // sx=  {{mr:1}}
-                            onClick={() => handleDialog(true)}
+                        <Card
+                        sx={{
+                            bgcolor: '#333333',
+                            width: 190,
+                            height: 40,
+                            ml: 2,
+                        }}
+                        onClick={() => handleDialog(true)}
                         >
-                            <SearchIcon />
-                        </IconButton>
+                            <IconButton
+                                sx={{my: 'auto', color: '#f1f1f1'}}
+                                size="large"
+                                edge="end"
+                                color="inherit"
+                                // aria-label="search"
+                                // sx=  {{mr:1}}   
+                            >
+                                <SearchIcon />
+                            </IconButton>
+                        </Card>
                     </Toolbar>
                 </AppBar>
             </HideOnScroll>

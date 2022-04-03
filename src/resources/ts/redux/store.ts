@@ -3,6 +3,7 @@ import statementReducer from './modules/statement'
 import statementArrayReducer from './modules/statementArray'
 import statementsWithLikeResucer from "./modules/statementsWithLike";
 import listReducer from './modules/lists'
+import listArrayReducer from "./modules/listArray";
 import isUpdateReducer from "./modules/isUpdate";
 import statementUIReducer from "./modules/statementUI";
 
@@ -12,6 +13,7 @@ export const store = configureStore({
         statementArray: statementArrayReducer,
         statementsWithLike:statementsWithLikeResucer,
         list: listReducer,
+        listArray: listArrayReducer,
         isUpdate: isUpdateReducer,
         statementUI: statementUIReducer,
     }

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "../lib/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setList } from "../redux/modules/lists";
 import { Card, CardContent, TextField, Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useAuth } from "../AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const CreateList = () => {
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const {
         register,
@@ -26,6 +29,7 @@ const CreateList = () => {
             setLoading(true)
             axios.post('/api/v1/lists/create', dataToSend).then((res)=>{
                 setLoading(false)
+                dispatch(setList(res.data))
             }).catch((err) => {
                 setLoading(false)
                 if(err.message === "Unauthenticated.") {
