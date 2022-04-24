@@ -4,6 +4,6 @@
 
 ## Sample user
 
-username : test
+mail address : test@sample.com
 
 password : test2022
