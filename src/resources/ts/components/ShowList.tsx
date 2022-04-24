@@ -52,7 +52,20 @@ const ShowList = () => {
         }
     }
 
-    const fetchList = () => {
+    // const fetchList = () => {
+    //     axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
+    //         // 作成日を見やすく変換
+    //         const newData = res.data.map((list) => {
+    //             return jpDateList(list)
+    //         })
+    //         // setLists(newData)
+    //         dispatch(setListArray(newData))
+    //     }).catch((err) => {
+    //         console.log(err)
+    //     })
+    // }
+
+    useEffect(() => {
         axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
             // 作成日を見やすく変換
             const newData = res.data.map((list) => {
@@ -63,10 +76,6 @@ const ShowList = () => {
         }).catch((err) => {
             console.log(err)
         })
-    }
-
-    useEffect(() => {
-        fetchList()
     },[])
 
     const handleDeleteBtn = (list) => {
@@ -77,32 +86,9 @@ const ShowList = () => {
     const deleteList = () => {
         setIsLoading(true)
         axios.delete('/api/v1/lists/' + selectedList.id).then((res) => {
-            // axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
-            //     // 作成日を見やすく変換
-            //     const newData = res.data.map((data) => {
-            //         const ts = Date.parse(data.created_at)
-            //         const dt = new Date(ts)
-            //         const japanDate = dt.getFullYear() + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getDate().toString().padStart(2, '0')
-            //         return {
-            //             ...data,
-            //             created_at: japanDate
-            //         }
-            //     })
-            //     // setLists(newData)
-            //     dispatch(setListArray(newData))
-            //     setIsLoading(false)
-            //     setOpenDeleteDialog(false)
-            // }).catch((err) => {
-            //     console.log(err)
-            // })
-            console.log(listArray)
-            console.log(selectedList)
             const newLists = listArray.filter((list) => {
-                console.log(list.title, list.id !== selectedList.id)
                 return list.id !== selectedList.id
             })
-            console.log(newLists)
-            // setLists(newLists)
             dispatch(setListArray(newLists))
             setIsLoading(false)
             setOpenDeleteDialog(false)
@@ -126,27 +112,8 @@ const ShowList = () => {
             }
             setIsLoading(true)
             axios.post('/api/v1/lists/create', dataToSend).then((res)=>{
-                // axios.get('/api/v1/lists?user_id=' + auth.user.id).then((res) => {
-                //     // 作成日を見やすく変換
-                //     const newData = res.data.map((data) => {
-                //         const ts = Date.parse(data.created_at)
-                //         const dt = new Date(ts)
-                //         const japanDate = dt.getFullYear() + '/' + (dt.getMonth() + 1).toString().padStart(2, '0') + '/' + dt.getDate().toString().padStart(2, '0')
-                //         return {
-                //             ...data,
-                //             created_at: japanDate
-                //         }
-                //     })
-                //     // setLists(newData)
-                //     dispatch(setListArray(newData))
-                //     setIsLoading(false)
-                //     setOpenCreateDialog(false)
-                // }).catch((err) => {
-                //     console.log(err)
-                // })
                 const jpData = jpDateList(res.data)
                 const newLists = [...listArray, jpData]
-                // setLists(newLists)
                 dispatch(setListArray(newLists))
                 setIsLoading(false)
                 setOpenCreateDialog(false)

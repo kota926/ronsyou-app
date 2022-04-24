@@ -46,6 +46,8 @@ const SearchBox = (props) => {
 
     const onChangeSubject = (e) => {
         setSubject(e.target.value)
+        setUnit('')
+        setSelectedTopics([])
         setSelectedUnits(searchUnits(e.target.value))
         setIsDisableUnit(false)
     }
@@ -53,7 +55,12 @@ const SearchBox = (props) => {
         setUnit(e.target.value)
         setTopicLoading(true)
         setDisaboeTopic(false)
-        axios.get('/api/v1/topics/' + subject + '/' + e.target.value + '/').then((res) => {
+        setSelectedTopics([])
+        const data = {
+            subject: subject,
+            unit: e.target.value,
+        }
+        axios.get('/api/v1/topics', {params: data}).then((res) => {
             setSelectedTopics(res.data)
             setTopicLoading(false)
         }).catch((err) => {
@@ -76,7 +83,7 @@ const SearchBox = (props) => {
                 topic: topic.trim(),
                 word: wordRef.current.value.trim(),
             }
-            axios.get('/api/v1/statements/', {params: data}).then((res) => {
+            axios.get('/api/v1/statements', {params: data}).then((res) => {
                 dispatch(setStatementArray(res.data))
                 props.finishSearching()
             }).catch((err) => {
@@ -86,7 +93,7 @@ const SearchBox = (props) => {
             setBtnLoading(true)
             setIsDisableUnit(true)
             setDisaboeTopic(true)
-            axios.get('/api/v1/statements/').then((res) => {
+            axios.get('/api/v1/statements').then((res) => {
                 dispatch(setStatementArray(res.data))
                 props.finishSearching()
             }).catch((err) => {

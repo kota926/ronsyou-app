@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/v1/users/{id}', [UserController::class, 'index']);
     Route::post('/v1/topics/create', [TopicController::class, 'create']);
-    Route::get('/v1/topics', [TopicController::class, 'index']);
+    // Route::get('/v1/topics', [TopicController::class, 'index']);
     Route::put('/v1/topics/update', [TopicController::class, 'update']);
     Route::post('/v1/lists/create', [ListController::class, 'create']);
     Route::get('/v1/lists', [ListController::class, 'index']);
@@ -39,6 +39,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/v1/likes', [LikeController::class, 'delete']);
 });
 
-Route::get('/v1/topics/{subject}/{unit}/', [TopicController::class, 'get']);
+Route::get('/v1/topics', [TopicController::class, 'index']);
 Route::get('/v1/statements', [StatementController::class, 'index']);
 Route::get('/v1/likes', [LikeController::class, 'index']);

@@ -46,6 +46,7 @@ const UpdateStatement = (props) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const statement = useSelector((state: RootState) => state.statement)
+    const statementArray = useSelector((state: RootState) => state.statementArray)
     const auth = useAuth();
     const [loading, setLoading] = useState(false);
     const [isDisable, setDisable] = useState(false);
@@ -83,7 +84,11 @@ const UpdateStatement = (props) => {
     }
 
     useEffect(() => {
-        axios.get('/api/v1/topics/' + subject + '/' + unit + '/').then((res) => {
+        const data = {
+            subject: subject,
+            unit: unit,
+        }
+        axios.get('/api/v1/topics', {params: data}).then((res) => {
             setSelectedTopics(res.data)
             setUnitLoading(false)
         }).catch((err) => {
@@ -103,6 +108,7 @@ const UpdateStatement = (props) => {
     const onChangeSubject = (sub) => {
         setSubject(sub.target.value)
         setUnit('')
+        setSelectedTopics([])
         setTopicName('')
         setUnits(searchUnits(sub.target.value))
         setDisableUnit(false)
@@ -110,7 +116,12 @@ const UpdateStatement = (props) => {
 
     const onChangeUnit = (u) => {
         setUnit(u.target.value)
-        axios.get('/api/v1/topics/' + subject + '/' + u.target.value + '/').then((res) => {
+        setSelectedTopics([])
+        const data = {
+            subject: subject,
+            unit: unit,
+        }
+        axios.get('/api/v1/topics', {params: data}).then((res) => {
             setSelectedTopics(res.data)
             setUnitLoading(false)
         }).catch((err) => {
@@ -138,15 +149,6 @@ const UpdateStatement = (props) => {
     }
 
     const onSubmit = () => {
-        const dataToSend = {
-            id: statement.id,
-            title: title.trim(),
-            topic_id: topicName,
-            question: question.trim(),
-            text: text.trim(),
-            memo: memo.trim(),
-            is_public: true,
-        }
         if(title.trim() && subject.trim() && unit.trim() && topicName.trim() && text.trim()) {
             if(auth.user) {
                 const topicToRegister = selectedTopics.find((e) => {
@@ -166,17 +168,16 @@ const UpdateStatement = (props) => {
                         memo: memo.trim(),
                     }
                     axios.put('/api/v1/statements/update', dataToSend).then((res) => {
-                        axios.get('/api/v1/statements?list_id=' + urlParams.id).then((res) => {
-                            if(Object.keys(res.data).length !== 0) {
-                                dispatch(setStatementArray(res.data))
-                            } else {
-                                dispatch(setStatementArray(null))
-                            }
-                            setLoading(false)
-                            dispatch(closeDialog())
-                        }).catch((err) => {
-                            console.log(err)
+                        const newStm = Object.assign(res.data, {
+                            topic: topicToRegister
                         })
+                        const newStatements = statementArray.map((stm) => {
+                            return stm.id === dataToSend.id ? newStm : stm
+        
+                        })
+                        dispatch(setStatementArray(newStatements))
+                        setLoading(false)
+                        dispatch(closeDialog())
                     }).catch((err) => {
                         console.log(err)
                         handleError('通信に失敗しました')
@@ -195,27 +196,26 @@ const UpdateStatement = (props) => {
                         name: topicName.trim(),
                         is_available: false
                     }
-                    axios.post('/api/v1/topics/create', topicToSend).then((res) => {
+                    axios.post('/api/v1/topics/create', topicToSend).then((res_topic) => {
                         const dataToSend = {
                             id: statement.id,
                             title: title.trim(),
-                            topic_id: res.data.id,
+                            topic_id: res_topic.data.id,
                             question: question.trim(),
                             text: text.trim(),
                             memo: memo.trim(),
                         }
-                        axios.put('/api/v1/statements/update', dataToSend).then((res) => {
-                            axios.get('/api/v1/statements?list_id=' + urlParams.id).then((res) => {
-                                if(Object.keys(res.data).length !== 0) {
-                                    dispatch(setStatementArray(res.data))
-                                } else {
-                                    dispatch(setStatementArray(null))
-                                }
-                                setLoading(false)
-                                dispatch(closeDialog())
-                            }).catch((err) => {
-                                console.log(err)
+                        axios.put('/api/v1/statements/update', dataToSend).then((res_stm) => {
+                            const newStm = Object.assign(res_stm.data, {
+                                topic: res_topic.data
                             })
+                            const newStatements = statementArray.map((stm) => {
+                                return stm.id === dataToSend.id ? newStm : stm
+            
+                            })
+                            dispatch(setStatementArray(newStatements))
+                            setLoading(false)
+                            dispatch(closeDialog())
                         }).catch((err) => {
                             console.log(err)
                             handleError('通信に失敗しました')

@@ -42,7 +42,8 @@ const ShowStatements = () => {
     const [loadingMessage, setLoadingMessage] = useState('読込中')
     const [isOpenDialog, setIsOpenDialog] = useState(false)
 
-    const fetchStatements = () => {
+
+    useEffect(() => {
         axios.get('/api/v1/statements?list_id=' + urlParams.id).then((res) => {
             if(Object.keys(res.data).length !== 0) {
                 dispatch(setStatementArray(res.data))
@@ -54,11 +55,6 @@ const ShowStatements = () => {
             console.log(err)
             setLoadingMessage('通信に失敗しました')
         })
-    }
-
-
-    useEffect(() => {
-       fetchStatements()
     },[])
 
     const handleEditBtn = (e) => {
@@ -77,7 +73,11 @@ const ShowStatements = () => {
 
     const deleteStm = () => {
         axios.delete('/api/v1/statements/' + selectedStatement.id).then((res) => {
-            fetchStatements()
+            const newStatements = statementArray.filter((stm) => {
+                return stm.id !== selectedStatement.id
+            })
+            dispatch(setStatementArray(newStatements))
+
             const data = {
                 max_pos: list.max_pos - 1
             }

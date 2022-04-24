@@ -23,6 +23,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
+import LoginIcon from '@mui/icons-material/Login';
 import { Link } from "react-router-dom";
 import SearchBox from "./SearchBox";
 
@@ -139,10 +140,15 @@ const SearchBar = () => {
                                 <ListItemText>検索</ListItemText>
                             </ListItem>
                         </Link>
-                        <ListItem onClick={logout}>
+                        {auth.user ? (<ListItem onClick={logout}>
                             <ListItemIcon><LogoutIcon /></ListItemIcon>
                             <ListItemText>ログアウト</ListItemText>
-                        </ListItem>
+                        </ListItem>) : (<Link to='../login'>
+                            <ListItem>
+                                <ListItemIcon><LoginIcon /></ListItemIcon>
+                                <ListItemText>ログイン</ListItemText>
+                            </ListItem>
+                        </Link>)}
                     </List>
                 </Box>
             </Drawer>

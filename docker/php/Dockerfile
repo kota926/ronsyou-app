@@ -38,4 +38,6 @@ ENV DB_PASSWORD=${MYSQL_PASSWORD} \
     DB_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
     DB_HOST=${MYSQL_HOST}
 
+RUN npm run production
+
 # RUN chmod -R 775 /var/www/laravel_docker/storage/logs

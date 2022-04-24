@@ -24,6 +24,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import GavelIcon from '@mui/icons-material/Gavel';
 import SearchIcon from '@mui/icons-material/Search';
+import LoginIcon from '@mui/icons-material/Login';
 import { Link } from "react-router-dom";
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
@@ -138,10 +139,15 @@ const BaseBar = () => {
                             <ListItemIcon><AccountBoxIcon /></ListItemIcon>
                             <ListItemText>ユーザー情報</ListItemText>
                         </ListItem> */}
-                        <ListItem onClick={logout}>
+                        {auth.user ? (<ListItem onClick={logout}>
                             <ListItemIcon><LogoutIcon /></ListItemIcon>
                             <ListItemText>ログアウト</ListItemText>
-                        </ListItem>
+                        </ListItem>) : (<Link to='../login'>
+                            <ListItem>
+                                <ListItemIcon><LoginIcon /></ListItemIcon>
+                                <ListItemText>ログイン</ListItemText>
+                            </ListItem>
+                        </Link>)}
                     </List>
                 </Box>
             </Drawer>

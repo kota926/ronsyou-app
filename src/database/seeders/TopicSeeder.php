@@ -21,5 +21,12 @@ class TopicSeeder extends Seeder
             'name' => '295条2項の間接適用',
             'is_available' => true
         ]);
+
+        Topic::create([
+            'subject' => '民訴',
+            'unit' => '訴訟要件',
+            'name' => '遺言無効確認の訴えの確認の利益',
+            'is_available' => true
+        ]);
     }
 }

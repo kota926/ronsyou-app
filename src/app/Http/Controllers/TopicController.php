@@ -18,8 +18,13 @@ class TopicController extends Controller
        return response()->json($topic);
    }
    public function index(Request $request) {
-       $topic = Topic::all();
-       return response()->json(($topic));
+       if($request->subject && $request->unit) {
+            $topic = Topic::where('subject', $request->subject)->where('unit', $request->unit)->get();
+            return response()->json($topic);
+       } else {
+            $all_topic = Topic::all();
+            return response()->json(($all_topic));
+       }
    }
 
    public function get($subject, $unit) {

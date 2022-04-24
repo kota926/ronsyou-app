@@ -16,11 +16,18 @@ class ListSeeder extends Seeder
      */
     public function run()
     {
-        $user_id = User::where('name', '=', 'sample1')->first()->id;
+        $sample_user_id = User::where('name', '=', 'sample1')->first()->id;
         ListModel::create([
             'title' => 'List1',
             'max_pos' => 1,
-            'user_id' => $user_id
+            'user_id' => $sample_user_id
+        ]);
+
+        $test_user_id = User::where('name', '=', 'test')->first()->id;
+        ListModel::create([
+            'title' => 'sample-list',
+            'max_pos' => 1,
+            'user_id' => $test_user_id
         ]);
     }
 }

@@ -5,7 +5,7 @@ volumes:
 
 services:
   web:
-    # image: 333233774574.dkr.ecr.ap-northeast-1.amazonaws.com/laravel-apache:latest
+    image: 333233774574.dkr.ecr.ap-northeast-1.amazonaws.com/laravel-apache:latest
     container_name: web
     build: 
       context: .
@@ -14,26 +14,27 @@ services:
         MYSQL_PASSWORD: $MYSQL_PASSWORD
         MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
         MYSQL_HOST: $MYSQL_HOST
+    platform: linux/amd64
     ports:
       - 80:80
-      - 3000:3000
-      - 3001:3001
-    volumes:
-      - ./src:/var/www/html
-    platform: linux/amd64
-    depends_on:
-      - mysql
+  #     - 3000:3000
+  #     - 3001:3001
+  #   volumes:
+  #     - ./src:/var/www/html
+    
+  #   depends_on:
+  #     - mysql
 
-  mysql:
-    container_name: mysql
-    build:
-      context: ./docker/mysql
-      args:
-        MYSQL_DATABASE: $MYSQL_DATABASE
-        MYSQL_USER: $MYSQL_USER
-        MYSQL_PASSWORD: $MYSQL_PASSWORD
-        MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-        TZ: Asia/Tokyo
-    volumes:
-      - db-data:/var/lib/mysql
-    platform: linux/x86_64
+  # mysql:
+  #   container_name: mysql
+  #   build:
+  #     context: ./docker/mysql
+  #     args:
+  #       MYSQL_DATABASE: $MYSQL_DATABASE
+  #       MYSQL_USER: $MYSQL_USER
+  #       MYSQL_PASSWORD: $MYSQL_PASSWORD
+  #       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+  #       TZ: Asia/Tokyo
+  #   volumes:
+  #     - db-data:/var/lib/mysql
+  #   platform: linux/x86_64

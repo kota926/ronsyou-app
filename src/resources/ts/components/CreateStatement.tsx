@@ -43,10 +43,10 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
-const CreateStatement = (props) => {
+const CreateStatement = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const statement = useSelector((state: RootState) => state.statement)
+    const statementArray = useSelector((state: RootState) => state.statementArray)
     const list = useSelector((state: RootState) => state.list)
     const auth = useAuth();
     const [loading, setLoading] = useState(false);
@@ -66,8 +66,6 @@ const CreateStatement = (props) => {
     const [unitLoading, setUnitLoading] = useState(true)
     const [isError, setIsError] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
-    const [headerMessage, setHeaderMessage] = useState('新規作成')
-    const [btnMessage, setBtnMessage] = useState('論証を追加する')
 
     const urlParams = useParams<{id: string}>()
 
@@ -95,6 +93,7 @@ const CreateStatement = (props) => {
     const onChangeSubject = (sub) => {
         setSubject(sub.target.value)
         setUnit('')
+        setSelectedTopics([])
         setTopicName('')
         setUnits(searchUnits(sub.target.value))
         setDisableUnit(false)
@@ -102,7 +101,12 @@ const CreateStatement = (props) => {
 
     const onChangeUnit = (u) => {
         setUnit(u.target.value)
-        axios.get('/api/v1/topics/' + subject + '/' + u.target.value + '/').then((res) => {
+        setSelectedTopics([])
+        const data = {
+            subject: subject,
+            unit: u.target.value
+        }
+        axios.get('/api/v1/topics', {params: data}).then((res) => {
             setSelectedTopics(res.data)
             setUnitLoading(false)
         }).catch((err) => {
@@ -126,25 +130,12 @@ const CreateStatement = (props) => {
         setTopicName(newInputValue)
     }
 
-    const fetchStatements = new Promise((resolve, reject) => {
-        axios.get('/api/v1/statements?list_id=' + urlParams.id).then((res) => {
-            if(Object.keys(res.data).length !== 0) {
-                dispatch(setStatementArray(res.data))
-            } else {
-                dispatch(setStatementArray(null))
-            }
-            resolve(res)
-        }).catch((err) => {
-            console.log(err)
-        })
-    })
-
     const updateList = (num: number) =>{
         const data = {
             max_pos: list.max_pos + num
         }
         axios.put('/api/v1/lists/update/'  + urlParams.id, data).then((res) => {
-            setList(res.data)
+            // setList(res.data)
             setLoading(false)
             setDisable(false)
             dispatch(setList(res.data))
@@ -179,8 +170,13 @@ const CreateStatement = (props) => {
                         list_id: urlParams.id,
                         publisher_id: auth.user.id,
                     }
-                    axios.post('/api/v1/statements/create', dataToSend).then((res) => {
-                        fetchStatements.then(() => updateList(1))
+                    axios.post('/api/v1/statements/create', dataToSend).then((stm) => {
+                        const newStm = Object.assign(stm.data, {
+                            topic: topicToRegister
+                        })
+                        const newStatements = [...statementArray, newStm]
+                        dispatch(setStatementArray(newStatements))
+                        updateList(1)
                     }).catch((err) => {
                         handleError('create statement error')
                         setLoading(false)
@@ -208,8 +204,13 @@ const CreateStatement = (props) => {
                             list_id: urlParams.id,
                             publisher_id: auth.user.id,
                         }
-                        axios.post('/api/v1/statements/create', dataToSend).then((res) => {
-                            fetchStatements.then(() => updateList(1))
+                        axios.post('/api/v1/statements/create', dataToSend).then((stm) => {
+                            const newStm = Object.assign(stm.data, {
+                                topic: res.data
+                            })
+                            const newStatements = [...statementArray, newStm]
+                            dispatch(setStatementArray(newStatements))
+                            updateList(1)
                         }).catch((err) => {
                             handleError('create statement error')
                             setLoading(false)
